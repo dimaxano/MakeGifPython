@@ -1,7 +1,19 @@
+"""
+TODO:
+    1. Make a method for checking for a single shape of all images in the list   
+    2. Leave only one border width variable. No need on vertical and horizaontal one
+
+"""
+
+
 from glob import glob
 import cv2
 import numpy as np
 import moviepy.editor as mpy
+
+
+BORDER_COEFF = 0.15
+
 
 def _get_shape(im_path_A, im_path_B):
     im_A = cv2.imread(im_path_A)
@@ -28,22 +40,28 @@ def check_lists(lists):
 
 def make_paired_gif(*args, save_path="./animation.gif", fps=25):
     """
-        Method creates a gif-image with image pairs from list_A and list_B
+        Method creates a gif-image with images from lists in args
         list_A, list_B - sorted lists with path to images
+        
+        :param args: variable number of lists with pathes to images
+        :param save_path: path for saving gif-image with gif-name
+        :param fps: frames-per-second for gif-image
+        :return: 
     
     """
+    image_lists = list(args)
+    check_lists(image_lists)
 
-    check_lists(args)
+    num = len(image_lists) # number of given image collections
+    print(f"{num} image collections are processing")
+    
+    h, w, c = _get_shape(image_lists[0][0], image_lists[1][0])        
 
-    num_images = len(args)
-    """
-    h, w, c = _get_shape(list_A[0], list_B[0])
-
-    vbw = int(w * 0.15) # vertical border width
-    hbv = int(h * 0.15) # horizantal borders width
+    vbw = int(w * BORDER_COEFF) # vertical border width
+    hbv = int(h * BORDER_COEFF) # horizantal borders width
 
     # creating background
-    width = int(num_images*w + (num_images + 1)*vbw)
+    width = int(num*w + (num + 1)*vbw)
     height = int(h + 2 * hbv)
     background = np.zeros((height, width, 3))
 
